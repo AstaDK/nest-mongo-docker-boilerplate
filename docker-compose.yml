@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  nest-api:
+    container_name: nest-api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: npm run start:dev
+    ports:
+      - 3002:3002
+    volumes:
+      - ./:/app
+    restart: always
+    volumes:
+      - ./:/app
+    depends_on:
+      - nest-mongo
+    platform: linux/amd64
+    networks:
+      - common
+
+  nest-mongo:
+    container_name: nest-mongo
+    image: docker.io/bitnami/mongodb:4.2
+    restart: always
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - 27012:27017
+    volumes:
+      - ./mongo-db:/bitnami/mongodb
+    networks:
+      - common
+
+  redis:
+    image: 'bitnami/redis:latest'
+    container_name: nest-redis
+    restart: always
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    networks:
+      - common
+    volumes:
+      - ./db-redis:/bitnami/redis/data
+    ports:
+      - 6372:6379
+
+
+networks:
+  common:
+
+volumes:
+  mongo-db:
